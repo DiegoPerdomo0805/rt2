@@ -44,7 +44,7 @@ class RayTracer(object):
         
         l_dir = norm(sub(self.light.position, intersect.point))
         intensity = dot( l_dir, intersect.normal)
-        print(material.diffuse[2], intensity)
+        #print(material.diffuse[2], intensity)
         if intensity < 0:
             return self.background_color
         else:
@@ -124,10 +124,10 @@ red = Material(diffuse=color(255, 0, 0))
 white = Material(diffuse=color(255, 255, 255))
 
 r = RayTracer(500, 500)
-r.light = Light(position=V3(-3, 0, 0), intensity=1.5)
+r.light = Light(position=V3(-3, 5, 0), intensity=1.5)
 r.dense = 1
 r.scene = [
     Sphere(V3(-3, 0, -16), 2, white),
-    Sphere(V3(-3, 0, -10), 2, red)
+    Sphere(V3(3, 0, -10), 2, red)
 ]
 r.render()
