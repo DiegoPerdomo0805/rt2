@@ -5,14 +5,15 @@ from material import Material
 from sphere import Sphere
 from math import *
 from light import Light
+from color import Color
 
 class RayTracer(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.clear_color = color(0, 0, 0)
-        self.current_color = color(255,255, 255)
-        self.background_color = color(0, 0, 0)
+        self.clear_color = Color(0, 0, 0)
+        self.current_color = Color(255,255, 255)
+        self.background_color = Color(0, 0, 0)
         self.dense = 1
         self.scene = []
         self.light = None
@@ -34,7 +35,7 @@ class RayTracer(object):
         writebmp(filename, self.width, self.height, self.framebuffer)
 
     def color(self, r, g, b):
-        self.current_color = color(r, g, b)    
+        self.current_color = Color(r, g, b)    
 
     def cast_ray(self, origin, direction):
         material, intersect = self.scene_intersect(origin, direction)
@@ -43,17 +44,19 @@ class RayTracer(object):
             return self.background_color
         
         l_dir = norm(sub(self.light.position, intersect.point))
-        intensity = dot( l_dir, intersect.normal)
+        diffuse_intensity = dot( l_dir, intersect.normal)
         #print(material.diffuse[2], intensity)
-        if intensity < 0:
+        if diffuse_intensity < 0:
             return self.background_color
         else:
-            diffuse = color(
-                int(material.diffuse[2] * intensity), 
-                int(material.diffuse[1] * intensity), 
-                int(material.diffuse[0] * intensity) 
-            )
-            return diffuse
+            #diffuse = material.diffuse * diffuse_intensity
+            diffuse = material.diffuse * diffuse_intensity * material.albedo[0]
+            light_reflection = reflect(l_dir, intersect.normal)
+            reflection_intensity =  max(0, dot(light_reflection, direction))
+            specular_intensity = self.light.intensity * reflection_intensity**material.spec
+            specular = self.light.color * specular_intensity * material.albedo[1]
+
+            return diffuse + specular
 
         #return material.diffuse
         #
@@ -120,14 +123,15 @@ class RayTracer(object):
 #r.dense = 0.1
 #r.render()
 #
-red = Material(diffuse=color(255, 0, 0))
-white = Material(diffuse=color(255, 255, 255))
+rubber = Material(diffuse=Color(255, 0, 0), albedo = [0.9, 0.1], spec = 10 )
+ivory = Material(diffuse=Color(255, 255, 255), albedo = [0.6, 0.3], spec = 50)
+
 
 r = RayTracer(500, 500)
-r.light = Light(position=V3(-3, 5, 0), intensity=1.5)
+r.light = Light(position=V3(0, 0, 0), intensity=1.4, color= Color(255, 255, 255))
 r.dense = 1
 r.scene = [
-    Sphere(V3(-3, 0, -16), 2, white),
-    Sphere(V3(3, 0, -10), 2, red)
+    Sphere(V3(-3, 0, -10), 2, rubber),
+    Sphere(V3(3, 0, -10), 2, ivory),
 ]
 r.render()

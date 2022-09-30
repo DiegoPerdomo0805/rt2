@@ -20,6 +20,21 @@ class V3(object):
 
   def __repr__(self):
     return "V3(%s, %s, %s)" % (self.x, self.y, self.z)
+
+  def __mul__(self, k):
+    return V3(self.x * k, self.y * k, self.z * k)
+
+  def __add__(self, v):
+    if type(v) == int or type(v) == float:
+          return V3(self.x + v, self.y + v, self.z + v)
+    else:
+      return V3(self.x + v.x, self.y + v.y, self.z + v.z)
+  
+  def __sub__(self, v):
+    if type(v) == int or type(v) == float:
+      return V3(self.x - v, self.y - v, self.z - v)
+    else:
+      return V3(self.x - v.x, self.y - v.y, self.z - v.z)
   
   def norm(self):
     l = (self.x**2 + self.y**2 + self.z**2)**0.5
@@ -65,7 +80,10 @@ def dot(v0, v1):
     Input: 2 size 3 vectors
     Output: Scalar with the dot product
   """
-  return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z
+  if type(v1) == int or type(v1) == float:
+    return V3(v0.x * v1, v0.y * v1, v0.z * v1)
+  else:
+    return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z
 
 def cross(v0, v1):
   """
@@ -219,5 +237,9 @@ def writebmp(filename, width, height, pixels):
   # Pixel data (width x height x 3 pixels)
   for x in range(height):
     for y in range(width):
-      f.write(pixels[x][y])
+      f.write(pixels[x][y].toBytes())
   f.close()
+
+#reflejo de un vector respecto a un plano
+def reflect(I, N):
+  return I - N * 2 * dot(I, N)
