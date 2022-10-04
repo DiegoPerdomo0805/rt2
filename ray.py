@@ -123,15 +123,3 @@ class RayTracer(object):
 #r.dense = 0.1
 #r.render()
 #
-rubber = Material(diffuse=Color(255, 0, 0), albedo = [0.9, 0.1], spec = 10 )
-ivory = Material(diffuse=Color(255, 255, 255), albedo = [0.6, 0.3], spec = 50)
-
-
-r = RayTracer(500, 500)
-r.light = Light(position=V3(0, 0, 0), intensity=1.4, color= Color(255, 255, 255))
-r.dense = 1
-r.scene = [
-    Sphere(V3(-3, 0, -10), 2, rubber),
-    Sphere(V3(3, 0, -10), 2, ivory),
-]
-r.render()
